@@ -1,0 +1,221 @@
+{% load plotly_dash %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Belfius</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/button-styles.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .auth-container {
+            background: #FFFFFF;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(195, 0, 69, 0.3);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            min-height: 600px;
+            display: flex;
+        }
+        
+        .auth-left {
+            background: linear-gradient(45deg, #C30045, #D60F3C);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #FFFFFF;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .welcome-text {
+            font-size: 1.5em;
+            text-align: center;
+            line-height: 1.6;
+            z-index: 1;
+            position: relative;
+            opacity: 0.95;
+        }
+        
+        .auth-right {
+            flex: 1;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #f1f2f2;
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .auth-header h2 {
+            color: #C30045;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .auth-header p {
+            color: #51626F;
+            font-size: 1.1em;
+        }
+        
+        .auth-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+            color: #51626F;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #51626F;
+            opacity: 0.3;
+        }
+        
+        .divider span {
+            background: #f1f2f2;
+            padding: 0 20px;
+            font-size: 0.9em;
+        }
+        
+        .features {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(81, 98, 111, 0.2);
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #51626F;
+        }
+        
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background: #C30045;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 0.8em;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-container {
+                flex-direction: column;
+                margin: 20px;
+                max-width: 400px;
+            }
+            
+            .auth-left {
+                min-height: 200px;
+            }
+            
+            .logo {
+                font-size: 2em;
+            }
+            
+            .welcome-text {
+                font-size: 1.2em;
+            }
+            
+            .auth-right {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="logo">Belfius</div>
+            <div class="welcome-text">
+                Dashboard Analytics Tool<br>
+            </div>
+        </div>
+        
+        <div class="auth-right">
+            <div class="auth-header">
+                <h2>Welcome</h2>
+                <p>Access your dashboard or create a new account</p>
+            </div>
+            
+            <div class="auth-options">
+                <a href="/login/" class="belfius-button">
+                    Login
+                </a>
+                
+                <div class="divider">
+                    <span>or</span>
+                </div>
+                
+                <a href="/register/" class="belfius-button secondary">
+                    Create New Account
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

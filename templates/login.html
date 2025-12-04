@@ -1,0 +1,380 @@
+{% load plotly_dash %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{ title }} - Belfius</title>
+	{% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/button-styles.css' %}">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		
+		body {
+			font-family: 'Arial', sans-serif;
+			background: #FFFFFF;
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.auth-container {
+			background: #FFFFFF;
+			border-radius: 15px;
+			box-shadow: 0 20px 40px rgba(195, 0, 69, 0.3);
+			overflow: hidden;
+			width: 100%;
+			max-width: 900px;
+			min-height: 600px;
+			display: flex;
+		}
+		
+		.auth-left {
+			background: linear-gradient(45deg, #C30045, #D60F3C);
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			color: #FFFFFF;
+			padding: 40px;
+			position: relative;
+			overflow: hidden;
+		}
+		
+		.auth-left::before {
+			content: '';
+			position: absolute;
+			top: -50%;
+			left: -50%;
+			width: 200%;
+			height: 200%;
+			background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+			animation: rotate 20s linear infinite;
+		}
+		
+		@keyframes rotate {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+		
+		.logo {
+			font-size: 3em;
+			font-weight: bold;
+			margin-bottom: 20px;
+			z-index: 1;
+			position: relative;
+		}
+		
+		.welcome-text {
+			font-size: 1.5em;
+			text-align: center;
+			line-height: 1.6;
+			z-index: 1;
+			position: relative;
+			opacity: 0.95;
+		}
+		
+		.auth-right {
+			flex: 1;
+			padding: 60px 40px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			background: #f1f2f2;
+		}
+		
+		.auth-header {
+			text-align: center;
+			margin-bottom: 40px;
+		}
+		
+		.auth-header h2 {
+			color: #C30045;
+			font-size: 2.2em;
+			margin-bottom: 10px;
+			font-weight: 300;
+		}
+		
+		.auth-header p {
+			color: #51626F;
+			font-size: 1.1em;
+		}
+		
+		.form-group {
+			margin-bottom: 25px;
+		}
+		
+		.form-group label {
+			display: block;
+			margin-bottom: 8px;
+			color: #51626F;
+			font-weight: 500;
+			font-size: 1.1em;
+		}
+		
+		.form-group input {
+			width: 100%;
+			padding: 15px 20px;
+			border: 2px solid #e1e5e9;
+			border-radius: 8px;
+			font-size: 1.1em;
+			transition: all 0.3s ease;
+			background: #ffffff;
+		}
+		
+		.form-group input:focus {
+			outline: none;
+			border-color: #C30045;
+			box-shadow: 0 0 0 3px rgba(195, 0, 69, 0.1);
+		}
+		
+		.form-group input:invalid {
+			border-color: #dc3545;
+		}
+		
+		.error-message {
+			color: #dc3545;
+			font-size: 0.9em;
+			margin-top: 5px;
+			display: none;
+		}
+		
+		.success-message {
+			color: #28a745;
+			font-size: 0.9em;
+			margin-bottom: 20px;
+			text-align: center;
+			display: none;
+		}
+		
+		.back-link {
+			text-align: center;
+			margin-top: 20px;
+		}
+		
+		.back-link a {
+			color: #C30045;
+			text-decoration: none;
+			font-size: 1em;
+			transition: color 0.3s ease;
+		}
+		
+		.back-link a:hover {
+			color: #D60F3C;
+			text-decoration: underline;
+		}
+		
+		.register-link {
+			text-align: center;
+			margin-top: 30px;
+			padding-top: 20px;
+			border-top: 1px solid rgba(81, 98, 111, 0.2);
+		}
+		
+		.register-link p {
+			color: #51626F;
+			margin-bottom: 10px;
+		}
+		
+		.register-link a {
+			color: #C30045;
+			text-decoration: none;
+			font-weight: 500;
+			transition: color 0.3s ease;
+		}
+		
+		.register-link a:hover {
+			color: #D60F3C;
+			text-decoration: underline;
+		}
+		
+		@media (max-width: 768px) {
+			.auth-container {
+				flex-direction: column;
+				margin: 20px;
+				max-width: 400px;
+			}
+			
+			.auth-left {
+				min-height: 200px;
+			}
+			
+			.logo {
+				font-size: 2em;
+			}
+			
+			.welcome-text {
+				font-size: 1.2em;
+			}
+			
+			.auth-right {
+				padding: 40px 30px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="auth-container">
+		<div class="auth-left">
+			<div class="logo">Belfius</div>
+			<div class="welcome-text">
+				Welcome Back!<br>
+				Access Your Dashboard
+			</div>
+		</div>
+		
+		<div class="auth-right">
+			<div class="auth-header">
+				<h2>Login</h2>
+				<p>Enter your username to access your dashboard</p>
+			</div>
+			
+			<div class="success-message" id="successMessage">
+				Login successful! Redirecting to dashboard...
+			</div>
+			
+			<form id="loginForm">
+				<div class="form-group">
+					<label for="username">Username</label>
+					<input type="text" id="username" name="username" required>
+					<div class="error-message" id="usernameError"></div>
+				</div>
+				
+				<button type="submit" class="belfius-button">
+					Login to Dashboard
+				</button>
+			</form>
+			
+			<div class="register-link">
+				<p>Don't have an account?</p>
+				<a href="/register/">Create a new account</a>
+			</div>
+			
+			<div class="back-link">
+				<a href="/">← Back to Home</a>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.getElementById('loginForm').addEventListener('submit', async function(e) {
+			e.preventDefault();
+			
+			document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+			
+			const formData = new FormData(this);
+			const data = Object.fromEntries(formData);
+			
+			try {
+				const response = await fetch('/api/v1/login/', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(data)
+				});
+				
+				if (response.ok) {
+					const responseData = await response.json();
+					
+					if (responseData.token) {
+						localStorage.setItem('authToken', responseData.token);
+					}
+					
+					document.getElementById('successMessage').style.display = 'block';
+					this.style.display = 'none';
+					
+					setTimeout(() => {
+						if (apiUtils.isAuthenticated()) {
+							window.apiUtils.apiRequest('/dashboard/').then(() => {
+								window.location.href = '/dashboard/';
+							});
+						} else {
+							console.error('Authentication failed after login');
+							window.location.reload();
+						}
+					}, 2000);
+				} else {
+					const errorData = await response.json();
+					
+					for (const [field, errors] of Object.entries(errorData)) {
+						const errorElement = document.getElementById(field + 'Error');
+						if (errorElement) {
+							errorElement.textContent = Array.isArray(errors) ? errors.join(', ') : errors;
+							errorElement.style.display = 'block';
+						}
+					}
+					
+					if (Object.keys(errorData).length === 0 || errorData.detail) {
+						const usernameError = document.getElementById('usernameError');
+						usernameError.textContent = errorData.detail || 'Login failed. Please check your username.';
+						usernameError.style.display = 'block';
+					}
+				}
+			} catch (error) {
+				console.error('Login error:', error);
+				const usernameError = document.getElementById('usernameError');
+				usernameError.textContent = 'An error occurred during login. Please try again.';
+				usernameError.style.display = 'block';
+			}
+		});
+		
+		window.apiUtils = {
+			getAuthToken() {
+				return localStorage.getItem('authToken');
+			},
+			
+			isAuthenticated() {
+				return !!localStorage.getItem('authToken');
+			},
+			
+			async apiRequest(url, options = {}) {
+				const token = this.getAuthToken();
+				
+				if (!token) {
+					throw new Error('No authentication token found');
+				}
+				
+				const defaultHeaders = {
+					'Content-Type': 'application/json',
+					'Authorization': `Token ${token}`
+				};
+				
+				const mergedOptions = {
+					...options,
+					headers: {
+						...defaultHeaders,
+						...options.headers
+					}
+				};
+				
+				try {
+					const response = await fetch(url, mergedOptions);
+					
+					// Handle 401 (unauthorized)
+					if (response.status === 401) {
+						this.logout();
+						window.location.href = '/login/';
+						throw new Error('Authentication failed. Please log in.');
+					}
+					
+					return response;
+				} catch (error) {
+					console.error('API request failed:', error);
+					throw error;
+				}
+			},
+
+			logout() {
+				localStorage.removeItem('authToken');
+			}
+		};
+	</script>
+</body>
+</html>
