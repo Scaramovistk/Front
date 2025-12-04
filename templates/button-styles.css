@@ -1,0 +1,46 @@
+/* Belfius belfius-Button Styles */
+
+.belfius-button {
+    background: linear-gradient(45deg, #C30045, #D60F3C);
+    color: #FFFFFF;
+    border: none;
+    padding: 18px 30px;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.belfius-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.belfius-button:hover::before {
+    left: 100%;
+}
+
+.belfius-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(195, 0, 69, 0.3);
+}
+
+.belfius-button.secondary {
+    background: linear-gradient(45deg, #DC0078, #8C193C);
+}
+
+.belfius-button.secondary:hover {
+    box-shadow: 0 10px 25px rgba(220, 0, 120, 0.3);
+}
