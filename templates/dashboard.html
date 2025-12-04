@@ -1,11 +1,9 @@
-{% load plotly_dash %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} - Belfius</title>
-    {% load static %}
+    <title>Dashboard - Belfius</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/button-styles.css' %}">
     <style>
         * {
@@ -16,206 +14,801 @@
         
         body {
             font-family: 'Arial', sans-serif;
-            background: #FFFFFF;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .auth-container {
-            background: #FFFFFF;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(195, 0, 69, 0.3);
-            overflow: hidden;
-            width: 100%;
-            max-width: 900px;
-            min-height: 600px;
-            display: flex;
-        }
-        
-        .auth-left {
-            background: linear-gradient(45deg, #C30045, #D60F3C);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #FFFFFF;
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .auth-left::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-        
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .logo {
-            font-size: 3em;
-            font-weight: bold;
-            margin-bottom: 20px;
-            z-index: 1;
-            position: relative;
-        }
-        
-        .welcome-text {
-            font-size: 1.5em;
-            text-align: center;
-            line-height: 1.6;
-            z-index: 1;
-            position: relative;
-            opacity: 0.95;
-        }
-        
-        .auth-right {
-            flex: 1;
-            padding: 60px 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
             background: #f1f2f2;
+            min-height: 100vh;
         }
         
-        .auth-header {
-            text-align: center;
+        /* Navbar Styles */
+        .navbar {
+            background: linear-gradient(45deg, #C30045, #D60F3C);
+            color: #FFFFFF;
+            padding: 0 40px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(195, 0, 69, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .navbar-logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .navbar-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .navbar-links a {
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 5px;
+        }
+        
+        .navbar-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .navbar-links a.active {
+            background: rgba(255, 255, 255, 0.15);
+            font-weight: 500;
+        }
+        
+        /* User Menu */
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-button {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .user-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .user-icon {
+            width: 30px;
+            height: 30px;
+            background: #FFFFFF;
+            color: #C30045;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .dropdown-arrow {
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+        
+        .user-button.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: #FFFFFF;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-header {
+            padding: 20px;
+            border-bottom: 1px solid #f1f2f2;
+        }
+        
+        .dropdown-header .user-name {
+            color: #C30045;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .dropdown-header .user-email {
+            color: #51626F;
+            font-size: 0.9em;
+        }
+        
+        .dropdown-items {
+            padding: 10px 0;
+        }
+        
+        .dropdown-item {
+            display: block;
+            padding: 12px 20px;
+            color: #51626F;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: #f1f2f2;
+            color: #C30045;
+        }
+        
+        .dropdown-item.logout {
+            color: #C30045;
+            border-top: 1px solid #f1f2f2;
+            font-weight: 500;
+        }
+        
+        .dropdown-item.logout:hover {
+            background: #C30045;
+            color: #FFFFFF;
+        }
+        
+        /* Main Content */
+        .dashboard-container {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-header {
             margin-bottom: 40px;
         }
         
-        .auth-header h2 {
+        .dashboard-header h1 {
             color: #C30045;
-            font-size: 2.2em;
+            font-size: 2.5em;
             margin-bottom: 10px;
             font-weight: 300;
         }
         
-        .auth-header p {
+        .dashboard-header p {
             color: #51626F;
             font-size: 1.1em;
         }
         
-        .auth-options {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
         }
         
-        .divider {
-            text-align: center;
-            margin: 30px 0;
+        .stat-card {
+            background: #FFFFFF;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
             position: relative;
-            color: #51626F;
+            overflow: hidden;
         }
         
-        .divider::before {
+        .stat-card::before {
             content: '';
             position: absolute;
-            top: 50%;
+            top: 0;
             left: 0;
-            right: 0;
-            height: 1px;
-            background: #51626F;
-            opacity: 0.3;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(45deg, #C30045, #D60F3C);
         }
         
-        .divider span {
-            background: #f1f2f2;
-            padding: 0 20px;
-            font-size: 0.9em;
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(195, 0, 69, 0.2);
         }
         
-        .features {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(81, 98, 111, 0.2);
-        }
-        
-        .feature-item {
+        .stat-card-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            color: #51626F;
         }
         
-        .feature-icon {
-            width: 20px;
-            height: 20px;
-            background: #C30045;
-            border-radius: 50%;
-            margin-right: 15px;
+        .stat-card-title {
+            color: #51626F;
+            font-size: 0.95em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #C30045, #D60F3C);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #FFFFFF;
-            font-size: 0.8em;
+            font-size: 1.2em;
+        }
+        
+        .stat-card-value {
+            color: #C30045;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card-change {
+            color: #51626F;
+            font-size: 0.9em;
+        }
+        
+        .stat-card-change.positive {
+            color: #28a745;
+        }
+        
+        .stat-card-change.negative {
+            color: #dc3545;
+        }
+        
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-card {
+            background: #FFFFFF;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .chart-card-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f2f2;
+        }
+        
+        .chart-card-title {
+            color: #C30045;
+            font-size: 1.4em;
+            font-weight: 500;
+        }
+        
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, #f1f2f2 0%, #e8e9ea 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #51626F;
+            font-size: 1.1em;
+        }
+        
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            margin-top: 40px;
+        }
+        
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+        
+        .section-title {
+            color: #C30045;
+            font-size: 1.8em;
+            font-weight: 500;
+        }
+        
+        .create-dashboard-btn {
+            background: linear-gradient(45deg, #C30045, #D60F3C);
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .create-dashboard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(195, 0, 69, 0.3);
+        }
+        
+        /* Dashboards Grid */
+        .dashboards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .dashboard-card {
+            background: #FFFFFF;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(45deg, #C30045, #D60F3C);
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(195, 0, 69, 0.2);
+        }
+        
+        .dashboard-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .dashboard-card-title {
+            color: #C30045;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .favorite-icon {
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .favorite-icon:hover {
+            transform: scale(1.2);
+        }
+        
+        .favorite-icon.active {
+            color: #FFD700;
+        }
+        
+        .dashboard-card-meta {
+            display: flex;
+            gap: 15px;
+            color: #51626F;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .dashboard-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #f1f2f2;
+        }
+        
+        .dashboard-card-date {
+            color: #999;
+            font-size: 0.85em;
+        }
+        
+        .dashboard-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: #51626F;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            color: #C30045;
+            transform: scale(1.1);
+        }
+        
+        .loading-spinner {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #51626F;
+            font-size: 1.1em;
+        }
+        
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state-text {
+            color: #51626F;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
         }
         
         @media (max-width: 768px) {
-            .auth-container {
-                flex-direction: column;
-                margin: 20px;
-                max-width: 400px;
+            .navbar {
+                padding: 0 20px;
             }
             
-            .auth-left {
-                min-height: 200px;
+            .navbar-links {
+                display: none;
             }
             
-            .logo {
+            .dashboard-container {
+                padding: 20px;
+            }
+            
+            .dashboard-header h1 {
                 font-size: 2em;
             }
             
-            .welcome-text {
-                font-size: 1.2em;
-            }
-            
-            .auth-right {
-                padding: 40px 30px;
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="auth-left">
-            <div class="logo">Belfius</div>
-            <div class="welcome-text">
-                Dashboard Analytics Tool<br>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="navbar-logo">Belfius</div>
+            <div class="navbar-links">
+                <a href="/dashboard/" class="active">Dashboard</a>
+                <a href="/analytics/">Create Dashboard</a>
+                <a href="/reports/">Search</a>
+                <a href="/settings/">Settings</a>
             </div>
         </div>
         
-        <div class="auth-right">
-            <div class="auth-header">
-                <h2>Welcome</h2>
-                <p>Access your dashboard or create a new account</p>
-            </div>
+        <div class="user-menu">
+            <button class="user-button" id="userMenuBtn">
+                <div class="user-icon">{{ user_initial|default:'U' }}</div>
+                <span>{{ user_name|default:'User' }}</span>
+                <span class="dropdown-arrow">▼</span>
+            </button>
             
-            <div class="auth-options">
-                <a href="/login/" class="belfius-button">
-                    Login
-                </a>
-                
-                <div class="divider">
-                    <span>or</span>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div class="dropdown-header">
+                    <div class="user-name">{{ user_name|default:'User Name' }}</div>
+                    <div class="user-email">{{ user_email|default:'user@example.com' }}</div>
                 </div>
-                
-                <a href="/register/" class="belfius-button secondary">
-                    Create New Account
-                </a>
+                <div class="dropdown-items">
+                    <a href="/profile/" class="dropdown-item"> My Profile</a>
+                    <a href="/settings/" class="dropdown-item">Settings</a>
+                    <a href="/help/" class="dropdown-item"> Help & Support</a>
+                    <a href="/logout/" class="dropdown-item logout">Logout</a>
+                </div>
             </div>
         </div>
+    </nav>
+    
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Welcome back, {{ user_name|default:'User' }}!</h1>
+        </div>
+        
+        <!-- Favorite Dashboards Section -->
+        <div class="section-header">
+            <h2 class="section-title">Favorite Dashboards</h2>
+        </div>
+        <div id="favoriteDashboards" class="dashboards-grid">
+            <div class="loading-spinner">Loading favorite dashboards...</div>
+        </div>
+        
+        <!-- All Dashboards Section -->
+        <div class="section-header">
+            <h2 class="section-title">All Dashboards</h2>
+        </div>
+        <div id="allDashboards" class="dashboards-grid">
+            <div class="loading-spinner">Loading dashboards...</div>
+        </div>
     </div>
+    
+    <script>
+        // User menu dropdown functionality
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        
+        userMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            this.classList.toggle('active');
+            dropdownMenu.classList.toggle('show');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!userMenuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                userMenuBtn.classList.remove('active');
+                dropdownMenu.classList.remove('show');
+            }
+        });
+        
+        // Close dropdown when pressing ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                userMenuBtn.classList.remove('active');
+                dropdownMenu.classList.remove('show');
+            }
+        });
+        
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:8060/api/v1';
+        const TOKEN = localStorage.getItem('auth_token'); // Get token from localStorage
+        
+        // Fetch dashboards from API
+        async function fetchDashboards() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/dashboards/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const dashboards = await response.json();
+                renderDashboards(dashboards);
+            } catch (error) {
+                console.error('Error fetching dashboards:', error);
+                showError('Failed to load dashboards. Please try again later.');
+            }
+        }
+        
+        // Render dashboards in the grid
+        function renderDashboards(dashboards) {
+            const favoriteDashboardsContainer = document.getElementById('favoriteDashboards');
+            const allDashboardsContainer = document.getElementById('allDashboards');
+            
+            // Separate favorites from all dashboards
+            const favorites = dashboards.filter(d => d.is_favorite);
+            const allDashboards = dashboards;
+            
+            // Render favorites
+            if (favorites.length > 0) {
+                favoriteDashboardsContainer.innerHTML = favorites.map(dashboard => createDashboardCard(dashboard)).join('');
+            } else {
+                favoriteDashboardsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon"></div>
+                        <div class="empty-state-text">No favorite dashboards yet</div>
+                        <p style="color: #999;">Click the star icon on any dashboard to add it to favorites</p>
+                    </div>
+                `;
+            }
+            
+            // Render all dashboards
+            if (allDashboards.length > 0) {
+                allDashboardsContainer.innerHTML = allDashboards.map(dashboard => createDashboardCard(dashboard)).join('');
+            } else {
+                allDashboardsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon"></div>
+                        <div class="empty-state-text">No dashboards found</div>
+                        <p style="color: #999;">Create your first dashboard to get started</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Create dashboard card HTML
+        function createDashboardCard(dashboard) {
+            const createdDate = new Date(dashboard.creation_date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            const isFavorite = dashboard.is_favorite || false;
+            const sheetCount = dashboard.sheets ? dashboard.sheets.length : 0;
+            
+            return `
+                <div class="dashboard-card" onclick="openDashboard('${dashboard.id}')">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h3 class="dashboard-card-title">${dashboard.name}</h3>
+                        </div>
+                        <span class="favorite-icon ${isFavorite ? 'active' : ''}" 
+                              onclick="toggleFavorite(event, '${dashboard.id}')">
+                            ${isFavorite ? '' : '☆'}
+                        </span>
+                    </div>
+                    <div class="dashboard-card-meta">
+                        <div class="meta-item">
+                            <span></span>
+                            <span>${sheetCount} sheets</span>
+                        </div>
+                        <div class="meta-item">
+                            <span></span>
+                            <span>${dashboard.views || 0} views</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-card-footer">
+                        <span class="dashboard-card-date">Created ${createdDate}</span>
+                        <div class="dashboard-actions">
+                            <button class="action-btn" onclick="editDashboard(event, '${dashboard.id}')" title="Edit">
+                                
+                            </button>
+                            <button class="action-btn" onclick="deleteDashboard(event, '${dashboard.id}')" title="Delete">
+                                
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Toggle favorite status
+        async function toggleFavorite(event, dashboardId) {
+            event.stopPropagation();
+            // TODO: Implement API call to toggle favorite status
+            console.log('Toggle favorite for dashboard:', dashboardId);
+            // After API call, refresh dashboards
+            fetchDashboards();
+        }
+        
+        // Open dashboard
+        function openDashboard(dashboardId) {
+            window.location.href = `/dashboard/${dashboardId}/`;
+        }
+        
+        // Edit dashboard
+        function editDashboard(event, dashboardId) {
+            event.stopPropagation();
+            window.location.href = `/dashboard/${dashboardId}/edit/`;
+        }
+        
+        // Delete dashboard
+        async function deleteDashboard(event, dashboardId) {
+            event.stopPropagation();
+            
+            if (!confirm('Are you sure you want to delete this dashboard?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/dashboards/${dashboardId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    fetchDashboards(); // Refresh the list
+                } else {
+                    alert('Failed to delete dashboard');
+                }
+            } catch (error) {
+                console.error('Error deleting dashboard:', error);
+                alert('Failed to delete dashboard');
+            }
+        }
+        
+        // Create new dashboard
+        function createNewDashboard() {
+            const name = prompt('Enter dashboard name:');
+            if (!name) return;
+            
+            fetch(`${API_BASE_URL}/dashboards/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: name })
+            })
+            .then(response => response.json())
+            .then(data => {
+                fetchDashboards(); // Refresh the list
+                window.location.href = `/dashboard/${data.id}/edit/`;
+            })
+            .catch(error => {
+                console.error('Error creating dashboard:', error);
+                alert('Failed to create dashboard');
+            });
+        }
+        
+        // Show error message
+        function showError(message) {
+            const containers = [
+                document.getElementById('favoriteDashboards'),
+                document.getElementById('allDashboards')
+            ];
+            
+            containers.forEach(container => {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <div class="empty-state-text" style="color: #C30045;">${message}</div>
+                    </div>
+                `;
+            });
+        }
+        
+        // Load dashboards on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchDashboards();
+        });
+    </script>
 </body>
 </html>
