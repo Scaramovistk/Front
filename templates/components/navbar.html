@@ -1,0 +1,122 @@
+<!-- Navbar Component -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <div class="navbar-logo" onclick="window.location.href='/dashboard/'">Belfius</div>
+        <div class="navbar-links">
+            <a href="/dashboard/" id="nav-dashboard">Dashboard</a>
+            <a href="/analytics/" id="nav-analytics">Create Dashboard</a>
+            <a href="/reports/" id="nav-search">Search</a>
+            <a href="/settings/" id="nav-settings">Settings</a>
+        </div>
+    </div>
+    
+    <div class="user-menu">
+        <button class="user-button" id="userMenuBtn">
+            <div class="user-icon" id="navUserIcon">U</div>
+            <span id="navUserName">User</span>
+            <span class="dropdown-arrow">▼</span>
+        </button>
+        
+        <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-header">
+                <div class="user-name" id="dropdownUserName">User Name</div>
+                <div class="user-email" id="dropdownUserEmail">user@example.com</div>
+            </div>
+            <div class="dropdown-items">
+                <a href="/profile/" class="dropdown-item">👤 My Profile</a>
+                <a href="/settings/" class="dropdown-item">⚙️ Settings</a>
+                <a href="/help/" class="dropdown-item">❓ Help & Support</a>
+                <a href="/logout/" class="dropdown-item logout">🚪 Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // User menu dropdown functionality
+    (function() {
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        
+        if (userMenuBtn && dropdownMenu) {
+            userMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.classList.toggle('active');
+                dropdownMenu.classList.toggle('show');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!userMenuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    userMenuBtn.classList.remove('active');
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+            
+            // Close dropdown when pressing ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    userMenuBtn.classList.remove('active');
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+        }
+        
+        // Load user info from localStorage
+        const TOKEN = localStorage.getItem('auth_token');
+        const USER_ID = localStorage.getItem('user_id');
+        
+        if (TOKEN && USER_ID) {
+            const API_BASE_URL = 'http://localhost:8060/api/v1';
+            
+            fetch(`${API_BASE_URL}/users/${USER_ID}/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(user => {
+                const initial = user.first_name ? user.first_name.charAt(0).toUpperCase() : 
+                               user.username ? user.username.charAt(0).toUpperCase() : 'U';
+                const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username;
+                
+                // Update navbar elements
+                if (document.getElementById('navUserIcon')) {
+                    document.getElementById('navUserIcon').textContent = initial;
+                }
+                if (document.getElementById('navUserName')) {
+                    document.getElementById('navUserName').textContent = user.first_name || user.username;
+                }
+                if (document.getElementById('dropdownUserName')) {
+                    document.getElementById('dropdownUserName').textContent = fullName;
+                }
+                if (document.getElementById('dropdownUserEmail')) {
+                    document.getElementById('dropdownUserEmail').textContent = user.username;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading user info:', error);
+            });
+        }
+        
+        // Set active nav link based on current path
+        const currentPath = window.location.pathname;
+        const navLinks = {
+            '/dashboard/': 'nav-dashboard',
+            '/analytics/': 'nav-analytics',
+            '/reports/': 'nav-search',
+            '/settings/': 'nav-settings'
+        };
+        
+        Object.keys(navLinks).forEach(path => {
+            if (currentPath.startsWith(path)) {
+                const element = document.getElementById(navLinks[path]);
+                if (element) {
+                    element.classList.add('active');
+                }
+            }
+        });
+    })();
+</script>
